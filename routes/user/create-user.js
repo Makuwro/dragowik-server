@@ -1,22 +1,24 @@
 const db = require("../../database");
 const argon2 = require("argon2");
+const bodyParser = require("body-parser");
+const jsonParser = bodyParser.json();
 
 module.exports = (app) => {
   
-  app.post("/api/user", async (req, res) => {
+  app.post("/api/user", jsonParser, async (req, res) => {
     
-    const username = req.query.username;
+    const username = req.body.username;
     const password = req.header("password");
     const email = req.header("email");
     
     // Make sure we got the main stuff
     if (!username || !password || !email) {
-      res.status(400).json({error: "Missing " + username ? (password ? "email address" : "password") : "username"});
+      res.status(400).json({error: "Missing " + (username ? (password ? "email address" : "password") : "username")});
       return;
     };
     
     // Make sure the username is available
-    if (db.prepare("select exists(select 1 from Users where username=(?)").get(username)) {
+    if (db.prepare("select * from Users where username=(?)").get(username)) {
       res.status(409).json({error: "Username already exists"});
       return;
     };
