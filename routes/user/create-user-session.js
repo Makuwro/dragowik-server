@@ -1,4 +1,3 @@
-const cookieParser = require("cookie-parser");
 const db = require("../../database");
 const argon2 = require("argon2");
 const crypto = require("crypto");
@@ -7,7 +6,7 @@ const jsonParser = bodyParser.json();
 
 module.exports = (app) => {
   
-  app.put("/api/user/session", cookieParser, async (req, res) => {
+  app.put("/api/user/session", jsonParser, async (req, res) => {
     
     const username = req.body.username;
     const password = req.header("password");
