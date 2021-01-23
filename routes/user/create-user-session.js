@@ -11,8 +11,8 @@ module.exports = (app) => {
     const password = req.header("password");
     
     // Make sure we got the main stuff
-    if (!username || !password || !email) {
-      res.status(400).json({error: "Missing " + username ? (password ? "email address" : "password") : "username"});
+    if (!username || !password) {
+      res.status(400).json({error: "Missing " + (username ? "password" : "username")});
       return;
     };
     
