@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Set up the routes
-require("./routes/user")(app);
+require("./routes/loader")(app);
 
 // Misc routes
 app.get("/", (req, res) => {
