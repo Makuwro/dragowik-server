@@ -6,5 +6,10 @@ db.prepare(`create table if not exists Users (
   email text not null,
   password text not null,
   sessionToken text unique)`).run();
+  
+db.prepare(`create table if not exists Articles (
+  name text not null unique,
+  source text
+  )`).run();
 
 module.exports = db;
