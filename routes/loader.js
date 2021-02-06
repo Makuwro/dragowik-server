@@ -5,8 +5,8 @@ module.exports = (app) => {
   for (var i = 0; FolderNames.length > i; i++) {
     const NormalizedPath = require("path").join(__dirname, FolderNames[i]);
     const Files = require("fs").readdirSync(NormalizedPath);
-    for (var i = 0; Files.length > i; i++) {
-      require("./" + FolderNames[i] + "/" + Files[i])(app);
+    for (var x = 0; Files.length > x; x++) {
+      require("./" + FolderNames[i] + "/" + Files[x])(app);
     };
   };
   
