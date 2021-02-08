@@ -7,9 +7,12 @@ db.prepare(`create table if not exists Users (
   password text not null,
   sessionToken text unique)`).run();
   
-db.prepare(`create table if not exists Articles (
-  name text not null unique,
-  source text
-  )`).run();
+db.prepare(`
+  create table if not exists Articles (
+    name text not null unique,
+    source text,
+    lastUpdated text not null default current_timestamp
+  )
+`).run();
 
 module.exports = db;

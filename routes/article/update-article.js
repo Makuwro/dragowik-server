@@ -4,12 +4,12 @@ const jsonParser = bodyParser.json();
 
 module.exports = (app) => {
   
-  app.put("/api/article/:articleName", (req, res) => {
+  function manageArticle(update, req, res) {
     
     const ArticleName = req.params.articleName;
-    const ArticleData = db.prepare("select * from Articles where name = (?)").get(ArticleName);
+    const ArticleData = update ? db.prepare("select * from Articles where name = (?)").get(ArticleName) : undefined;
     
-    if (!ArticleData) {
+    if (!ArticleData && update) {
       res.status(404).json({error: "Article not found"});
       return;
     };
@@ -20,10 +20,18 @@ module.exports = (app) => {
       res.status(400).json({error: "No content given"});
     };
     
-    db.prepare("update Articles set source = (?) where name = (?)").run(Source, ArticleName);
+    update ? db.prepare("update Articles set source = (?), lastUpdated = current_timestamp where name = (?)").run(Source, ArticleName) : db.prepare("insert into Articles (name, source) values (?,?)").run(ArticleName, Source);
     
-    res.sendStatus(200);
+    res.sendStatus(update ? 200 : 201);
     
+  };
+  
+  app.put("/api/article/:articleName", (req, res) => {
+    manageArticle(true, req, res);
+  });
+  
+  app.post("/api/article/:articleName", (req, res) => {
+    manageArticle(false, req, res);
   });
   
 };
