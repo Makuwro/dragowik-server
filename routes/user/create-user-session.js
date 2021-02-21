@@ -34,6 +34,7 @@ module.exports = (app) => {
     const SessionToken = crypto.randomBytes(30).toString("hex");
     db.prepare("update Users set sessionToken=(?) where username=(?)").run(SessionToken, username);
     res.cookie("DragowikSessionToken", SessionToken);
+    res.cookie("MakuwikiSessionToken", SessionToken);
     
     // Success!
     res.sendStatus(200);
