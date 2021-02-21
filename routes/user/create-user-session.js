@@ -18,7 +18,7 @@ module.exports = (app) => {
     };
     
     // Make sure user exists
-    const UserInfo = db.prepare("select * from Users where username=(?)").get(username);
+    const UserInfo = db.prepare("select * from Users where username = (?)").get(username);
     if (!UserInfo) {
       res.status(404).json({error: "User does not exist"});
       return;
@@ -32,8 +32,7 @@ module.exports = (app) => {
     
     // Create session
     const SessionToken = crypto.randomBytes(30).toString("hex");
-    db.prepare("update Users set sessionToken=(?) where username=(?)").run(SessionToken, username);
-    res.cookie("DragowikSessionToken", SessionToken);
+    db.prepare("update Users set sessionToken = (?) where username = (?)").run(SessionToken, username);
     res.cookie("MakuwikiSessionToken", SessionToken);
     
     // Success!
