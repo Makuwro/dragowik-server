@@ -14,7 +14,8 @@ db.prepare(`
   create table if not exists Articles (
     name text not null unique,
     source text,
-    lastUpdated text not null default current_timestamp
+    lastUpdated text not null default current_timestamp,
+    contributors text
   )
 `).run();
 
