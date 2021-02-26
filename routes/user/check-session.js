@@ -8,17 +8,19 @@ module.exports = (app) => {
   
   app.get("/api/user/session", jsonParser, async (req, res) => {
     
-    const SessionToken = req.header("sessionToken");
+    var sessionToken = req.header("sessionToken");
     
     // Make sure we got the main stuff
-    if (!SessionToken) {
+    if (!sessionToken) {
       res.status(400).json({error: "Missing token"});
       return;
     };
     
     // Make sure session exists
-    const User = db.prepare("select rowid, * from Users where sessionToken = (?)" + (req.query.id ? " and rowid = (?)" : "")).get(SessionToken, req.query.id ? req.query.id : undefined);
-    if (!User || (req.query.username && User.rowid !== req.query.id)) {
+    var userId = req.query.id;
+    const UserQuery = db.prepare("select rowid, * from Users where sessionToken = (?)" + (userId ? " and rowid = (?)" : ""));
+    var user = userId ? user.get(sessionToken, userId) : user.get(sessionToken);
+    if (!user || (req.query.username && user.rowid !== userId)) {
       res.status(User ? 403 : 404).json({error: "Invalid token"});
       return;
     };
