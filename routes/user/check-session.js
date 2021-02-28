@@ -19,7 +19,7 @@ module.exports = (app) => {
     // Make sure session exists
     var userId = req.query.id;
     const UserQuery = db.prepare("select rowid, * from Users where sessionToken = (?)" + (userId ? " and rowid = (?)" : ""));
-    var user = userId ? user.get(sessionToken, userId) : user.get(sessionToken);
+    var user = userId ? UserQuery.get(sessionToken, userId) : UserQuery.get(sessionToken);
     if (!user || (req.query.username && user.rowid !== userId)) {
       res.status(User ? 403 : 404).json({error: "Invalid token"});
       return;

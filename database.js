@@ -9,14 +9,17 @@ db.prepare(`
     sessionToken text unique
   )
 `).run();
-  
-db.prepare(`
-  create table if not exists Articles (
-    name text not null unique,
-    source text,
-    lastUpdated text not null default current_timestamp,
-    contributors text
-  )
-`).run();
+
+var tAndA = ["Articles", "Templates"];
+for (var i = 0; tAndA.length > i; i++) {
+  db.prepare(`
+    create table if not exists ` + tAndA[i] + ` (
+      name text not null unique,
+      source text,
+      lastUpdated text not null default current_timestamp,
+      contributors text
+    )
+  `).run();
+};
 
 module.exports = db;

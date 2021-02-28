@@ -5,7 +5,7 @@ const fetch = require("node-fetch");
 
 module.exports = (app) => {
   
-  async function manageArticle(update, req, res) {
+  async function manageArticle(update, template, req, res) {
     
     // Verify the user 
     const SessionToken = req.header("sessionToken");
@@ -17,16 +17,21 @@ module.exports = (app) => {
     
     // Now do some article checks
     const ArticleName = req.params.articleName;
-    const ArticleData = update ? db.prepare("select * from Articles where name = (?)").get(ArticleName) : undefined;
+    var tOrA = template ? "Template" : "Article";
+    const ArticleData = update ? db.prepare("select * from " + tOrA + "s where name = (?)").get(ArticleName) : undefined;
     if (!ArticleData && update) {
-      res.status(404).json({error: "Article not found"});
+      res.status(404).json({error: tOrA + " not found"});
       return;
     };
     
+    console.log("ok");
     const Source = req.body.source;
     if (!Source) {
       res.status(400).json({error: "No content given"});
+      return;
     };
+    
+    console.log("nice");
     
     // Update the article 
     const Contributors = update ? JSON.parse(ArticleData.contributors).filter(contributorId => {
@@ -35,7 +40,7 @@ module.exports = (app) => {
     
     Contributors ? Contributors.unshift(UserInfo.rowid) : undefined;
     
-    update ? db.prepare("update Articles set source = (?), lastUpdated = current_timestamp, contributors = (?) where name = (?)").run(Source, JSON.stringify(Contributors), ArticleName) : db.prepare("insert into Articles (name, source, contributors) values (?,?,?)").run(ArticleName, Source, JSON.stringify([UserInfo.rowid]));
+    update ? db.prepare("update " + tOrA + "s set source = (?), lastUpdated = current_timestamp, contributors = (?) where name = (?)").run(Source, JSON.stringify(Contributors), ArticleName) : db.prepare("insert into " + tOrA + "s (name, source, contributors) values (?,?,?)").run(ArticleName, Source, JSON.stringify([UserInfo.rowid]));
     
     // Success!
     res.sendStatus(update ? 200 : 201);
@@ -43,11 +48,19 @@ module.exports = (app) => {
   };
   
   app.put("/api/article/:articleName", async (req, res) => {
-    await manageArticle(true, req, res);
+    await manageArticle(true, false, req, res);
   });
   
   app.post("/api/article/:articleName", async (req, res) => {
-    await manageArticle(false, req, res);
+    await manageArticle(false, false, req, res);
+  });
+  
+  app.put("/api/template/:articleName", async (req, res) => {
+    await manageArticle(true, true, req, res);
+  });
+  
+  app.post("/api/template/:articleName", async (req, res) => {
+    await manageArticle(false, true, req, res);
   });
   
 };
